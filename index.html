@@ -3,83 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Муж сделал это с женой (мультяшный превью)</title>
+<title>Фото-история</title>
+
 <style>
-  body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #121212; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
-  .scene-container { width: 90%; max-width: 900px; text-align: center; }
-  #sceneImage { width: 100%; border-radius: 12px; transition: opacity 0.5s ease; }
-  #sceneStory { margin-top: 10px; font-size: 18px; color: #FF9000; min-height: 50px; transition: opacity 0.5s ease; }
-  #sceneCounter { margin-top: 5px; font-size: 14px; color: #ccc; }
-  .nav-buttons { margin-top: 20px; }
-  button { background: #FF9000; border: none; padding: 10px 20px; margin: 0 10px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: background 0.3s; }
-  button:hover { background: #ffa733; }
+body {
+  margin: 0;
+  background: #0e0e0e;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#app {
+  width: 90%;
+  max-width: 900px;
+  text-align: center;
+}
+
+img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(255,144,0,0.3);
+}
+
+#story {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #ff9000;
+  min-height: 50px;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+button {
+  background: #ff9000;
+  border: none;
+  padding: 12px 22px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+button:hover {
+  background: #ffae3d;
+}
+
+.hidden {
+  display: none;
+}
 </style>
 </head>
+
 <body>
 
-<div class="scene-container">
-  <img id="sceneImage" src="" alt="Сцена">
-  <div id="sceneStory">Загрузка сцены...</div>
-  <div id="sceneCounter"></div>
-  <div class="nav-buttons">
-    <button onclick="prevScene()">← Назад</button>
-    <button onclick="nextScene()">Вперед →</button>
+<div id="app">
+
+  <!-- INTRO -->
+  <div id="intro">
+    <img src="1.png" alt="Интро">
+    <div class="buttons">
+      <button onclick="startStory()">Начать историю</button>
+    </div>
   </div>
+
+  <!-- STORY -->
+  <div id="storyView" class="hidden">
+    <img id="sceneImg">
+    <div id="story"></div>
+    <div class="buttons">
+      <button onclick="prev()">← Назад</button>
+      <button onclick="next()">Вперёд →</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const scenes = [
-  // Превью
-  { img: encodeURI('preview.png'), story: 'Муж сделал это с женой (мультяшный превью)' },
-  
-  // Основные 22 сцены
-  { img: encodeURI('загружено - 2026-01-12T232501.124.png'), story: 'Сцена 1: Вступление, интрига.' },
-  { img: encodeURI('загружено - 2026-01-12T232757.150.png'), story: 'Сцена 2: Начало истории.' },
-  { img: encodeURI('загружено - 2026-01-12T232914.625.png'), story: 'Сцена 3: Первый шаг героя.' },
-  { img: encodeURI('загружено - 2026-01-12T232949.336.png'), story: 'Сцена 4: Напряжение.' },
-  { img: encodeURI('загружено - 2026-01-12T233143.324.png'), story: 'Сцена 5: Секрет раскрыт.' },
-  { img: encodeURI('загружено - 2026-01-13T000445.336.png'), story: 'Сцена 6: Выбор героя.' },
-  { img: encodeURI('загружено - 2026-01-13T004259.687.png'), story: 'Сцена 7: Поворот событий.' },
-  { img: encodeURI('загружено - 2026-01-13T004746.705.png'), story: 'Сцена 8: Новый персонаж.' },
-  { img: encodeURI('загружено - 2026-01-13T022301.004.png'), story: 'Сцена 9: Напряжение растет.' },
-  { img: encodeURI('загружено - 2026-01-13T022420.515.png'), story: 'Сцена 10: Решающий шаг.' },
-  { img: encodeURI('загружено - 2026-01-13T022533.871.png'), story: 'Сцена 11: Внимание на детали.' },
-  { img: encodeURI('загружено - 2026-01-13T022634.678.png'), story: 'Сцена 12: Развязка набирает обороты.' },
-  { img: encodeURI('загружено - 2026-01-13T022737.915.png'), story: 'Сцена 13: Последствия.' },
-  { img: encodeURI('загружено - 2026-01-13T023447.891.png'), story: 'Сцена 14: Кульминация.' },
-  { img: encodeURI('загружено - 2026-01-13T184731.079.png'), story: 'Сцена 15: Развязка.' },
-  { img: encodeURI('загружено - 2026-01-13T191849.034.png'), story: 'Сцена 16: Отдых героя.' },
-  { img: encodeURI('загружено - 2026-01-13T192606.087.png'), story: 'Сцена 17: Тёплая атмосфера.' },
-  { img: encodeURI('загружено - 2026-01-13T192916.697.png'), story: 'Сцена 18: Новые горизонты.' },
-  { img: encodeURI('загружено - 2026-01-13T193020.129.png'), story: 'Сцена 19: Радости и улыбки.' },
-  { img: encodeURI('загружено - 2026-01-13T193126.892.png'), story: 'Сцена 20: Секреты прошлого.' },
-  { img: encodeURI('загружено - 2026-01-13T202557.230.png'), story: 'Сцена 21: Финальный кадр.' },
-  { img: encodeURI('загружено - 2026-01-13T203454.029.png'), story: 'Сцена 22: Спокойствие.' }
+  { img: "2026-01-12T232501.124.png", text: "Сцена 1. Начало. Всё кажется обычным." },
+  { img: "2026-01-12T232757.150.png", text: "Сцена 2. Атмосфера меняется." },
+  { img: "2026-01-12T232914.625.png", text: "Сцена 3. Внимание к деталям." },
+  { img: "2026-01-12T232949.336.png", text: "Сцена 4. Поворот момента." },
+  { img: "2026-01-12T233143.324.png", text: "Сцена 5. Эмоции нарастают." },
+  { img: "2026-01-13T000445.336.png", text: "Сцена 6. Напряжение." },
+  { img: "2026-01-13T004259.687.png", text: "Сцена 7. Новая динамика." },
+  { img: "2026-01-13T004746.705.png", text: "Сцена 8. Взгляд говорит больше." },
+  { img: "2026-01-13T022301.004.png", text: "Сцена 9. Ключевой момент." },
+  { img: "2026-01-13T022420.515.png", text: "Сцена 10. Всё становится ясно." },
+  { img: "2026-01-13T022533.871.png", text: "Сцена 11. Решение принято." },
+  { img: "2026-01-13T022634.678.png", text: "Сцена 12. Последствия." },
+  { img: "2026-01-13T022737.915.png", text: "Сцена 13. Кульминация." },
+  { img: "2026-01-13T023447.891.png", text: "Сцена 14. Разрядка." },
+  { img: "2026-01-13T184731.079.png", text: "Сцена 15. Спокойствие." },
+  { img: "2026-01-13T191849.034.png", text: "Сцена 16. Финальные эмоции." },
+  { img: "2026-01-13T192606.087.png", text: "Сцена 17. История подходит к концу." },
+  { img: "2026-01-13T192916.697.png", text: "Сцена 18. Последний взгляд." },
+  { img: "2026-01-13T193020.129.png", text: "Сцена 19. Почти финал." },
+  { img: "2026-01-13T193126.892.png", text: "Сцена 20. Конец истории." }
 ];
 
-let currentScene = 0;
+let index = 0;
 
-function showScene(index) {
-  const img = document.getElementById('sceneImage');
-  const story = document.getElementById('sceneStory');
-  const counter = document.getElementById('sceneCounter');
-
-  img.style.opacity = 0;
-  story.style.opacity = 0;
-
-  setTimeout(() => {
-    img.src = scenes[index].img;
-    story.textContent = scenes[index].story;
-    counter.textContent = `Сцена ${index + 1} из ${scenes.length}`;
-    img.style.opacity = 1;
-    story.style.opacity = 1;
-  }, 200);
+function startStory() {
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("storyView").classList.remove("hidden");
+  show();
 }
 
-function nextScene() { currentScene = (currentScene + 1) % scenes.length; showScene(currentScene); }
-function prevScene() { currentScene = (currentScene - 1 + scenes.length) % scenes.length; showScene(currentScene); }
+function show() {
+  document.getElementById("sceneImg").src = scenes[index].img;
+  document.getElementById("story").textContent = scenes[index].text;
+}
 
-showScene(currentScene);
+function next() {
+  if (index < scenes.length - 1) index++;
+  show();
+}
+
+function prev() {
+  if (index > 0) index--;
+  show();
+}
 </script>
 
 </body>
