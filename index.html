@@ -100,10 +100,19 @@ function showScene(index) {
   story.style.opacity = 0;
 
   setTimeout(() => {
-    img.src = scenes[index].img;
-    story.textContent = scenes[index].story;
-    img.style.opacity = 1;
-    story.style.opacity = 1;
+    fetch(scenes[index].img)
+      .then(res => {
+        if(res.ok) {
+          img.src = scenes[index].img;
+        } else {
+          img.src = '';
+          story.textContent = 'Ошибка: файл не найден: ' + scenes[index].img;
+          console.warn('Файл не найден:', scenes[index].img);
+        }
+        story.textContent = scenes[index].story;
+        img.style.opacity = 1;
+        story.style.opacity = 1;
+      });
   }, 300);
 }
 
@@ -117,6 +126,7 @@ function prevScene() {
   showScene(currentScene);
 }
 
+// Показ первой сцены сразу
 showScene(currentScene);
 </script>
 
