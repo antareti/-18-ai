@@ -74,8 +74,7 @@ button:hover { background: #ffae3d; }
       <button onclick="nextScene()">Вперёд →</button>
     </div>
     <div>
-      <button onclick="speak()">🔊 Озвучить</button>
-      <button onclick="stopSpeak()">⏹ Стоп</button>
+      <button onclick="stopSpeak()">⏹ Остановить озвучку</button>
     </div>
   </div>
 
@@ -85,13 +84,13 @@ button:hover { background: #ffae3d; }
 const scenes = [
   { img: "загhghружено.png", text: "Старый подвал встречал тишиной и мягким светом лампы." },
   { img: "загружено - 2026-01-12T232501.124.png", text: "Они спустились вниз, оставив шум мира наверху." },
-  { img: "загружено - 2026-01-12T232757.150.png", text: "В прохладе камня слова звучали особенно искренне." },
-  { img: "загружено - 2026-01-12T232914.625.png", text: "Руки нашли друг друга, и время замедлилось." },
-  { img: "загружено - 2026-01-12T232949.336.png", text: "Смех был тихим, но настоящим." },
-  { img: "загружено - 2026-01-12T233143.324.png", text: "В этом месте было безопасно быть собой." },
-  { img: "загружено - 2026-01-13T000445.336.png", text: "Тепло близости согревало лучше любого огня." },
-  { img: "загружено - 2026-01-13T004259.687.png", text: "Они делили мгновение, не нуждаясь в словах." },
-  { img: "загружено - 2026-01-13T004746.705.png", text: "потом муж достал хуй и дал жене в рот она сосала а потом он засунул хуй в пизду потом он засунул хуй в жопу жене а потом кончилл в рот." }
+  { img: "загружено - 2026-01-12T232757.150.png", text: "В прохладе каменных стен слова звучали особенно искренне." },
+  { img: "загружено - 2026-01-12T232914.625.png", text: "Руки нашли друг друга, и время словно замедлилось." },
+  { img: "загружено - 2026-01-12T232949.336.png", text: "Смех был тихим, но в нём было всё тепло их близости." },
+  { img: "загружено - 2026-01-12T233143.324.png", text: "В этом месте они чувствовали себя по-настоящему рядом." },
+  { img: "загружено - 2026-01-13T000445.336.png", text: "Тепло между ними было сильнее холода камня." },
+  { img: "загружено - 2026-01-13T004259.687.png", text: "Без слов они понимали друг друга полностью." },
+  { img: "загружено - 2026-01-13T004746.705.png", text: "и он трахнул жену в жопу утром дал в рот и жили они так дольго и красыво." }
 ];
 
 let index = 0;
@@ -100,27 +99,36 @@ let utterance = null;
 function startStory() {
   document.getElementById("intro").classList.add("hidden");
   document.getElementById("viewer").classList.remove("hidden");
-  showScene();
+  showScene(true);
 }
 
-function showScene() {
-  document.getElementById("sceneImage").src = scenes[index].img;
-  document.getElementById("story").textContent = scenes[index].text;
+function showScene(autoSpeak = true) {
+  const scene = scenes[index];
+  document.getElementById("sceneImage").src = scene.img;
+  document.getElementById("story").textContent = scene.text;
+
+  if (autoSpeak) {
+    speak(scene.text);
+  }
 }
 
 function nextScene() {
-  if (index < scenes.length - 1) index++;
-  showScene();
+  if (index < scenes.length - 1) {
+    index++;
+    showScene(true);
+  }
 }
 
 function prevScene() {
-  if (index > 0) index--;
-  showScene();
+  if (index > 0) {
+    index--;
+    showScene(true);
+  }
 }
 
-function speak() {
+function speak(text) {
   stopSpeak();
-  utterance = new SpeechSynthesisUtterance(scenes[index].text);
+  utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "ru-RU";
   utterance.rate = 0.95;
   utterance.pitch = 1;
@@ -128,8 +136,11 @@ function speak() {
 }
 
 function stopSpeak() {
-  if (speechSynthesis.speaking) speechSynthesis.cancel();
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
 }
 </script>
+
 </body>
 </html>
