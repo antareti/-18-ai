@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сценарий Фото</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .scene-container {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+  }
+  img {
+    width: 100%;
+    border-radius: 12px;
+    transition: opacity 0.5s ease;
+  }
+  .story {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #FF9000;
+    min-height: 50px;
+    transition: opacity 0.5s ease;
+  }
+  .nav-buttons {
+    margin-top: 20px;
+  }
+  button {
+    background-color: #FF9000;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background-color: #ffa733;
+  }
+</style>
+</head>
+<body>
+
+<div class="scene-container">
+  <img id="sceneImage" src="" alt="Сцена">
+  <div class="story" id="sceneStory"></div>
+  <div class="nav-buttons">
+    <button onclick="prevScene()">← Назад</button>
+    <button onclick="nextScene()">Вперед →</button>
+  </div>
+</div>
+
+<script>
+const scenes = [
+  {
+    img: 'scene1.jpg', // здесь путь к твоей первой фотке
+    story: 'Первая сцена: атмосфера загадочности и лёгкой тревоги.'
+  },
+  {
+    img: 'scene2.jpg',
+    story: 'Вторая сцена: главный герой делает неожиданный шаг.'
+  },
+  {
+    img: 'scene3.jpg',
+    story: 'Третья сцена: напряжение растёт, на горизонте появляется новая фигура.'
+  }
+];
+
+let currentScene = 0;
+
+function showScene(index) {
+  const img = document.getElementById('sceneImage');
+  const story = document.getElementById('sceneStory');
+
+  img.style.opacity = 0;
+  story.style.opacity = 0;
+
+  setTimeout(() => {
+    img.src = scenes[index].img;
+    story.textContent = scenes[index].story;
+    img.style.opacity = 1;
+    story.style.opacity = 1;
+  }, 300);
+}
+
+function nextScene() {
+  currentScene = (currentScene + 1) % scenes.length;
+  showScene(currentScene);
+}
+
+function prevScene() {
+  currentScene = (currentScene - 1 + scenes.length) % scenes.length;
+  showScene(currentScene);
+}
+
+// Показ первой сцены сразу
+showScene(currentScene);
+</script>
+
+</body>
+</html>
