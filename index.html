@@ -14,22 +14,17 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden;
   }
-
   .scene-container {
-    position: relative;
     width: 90%;
     max-width: 900px;
     text-align: center;
   }
-
   #sceneImage {
     width: 100%;
     border-radius: 12px;
     transition: opacity 0.5s ease;
   }
-
   #sceneStory {
     margin-top: 10px;
     font-size: 18px;
@@ -37,11 +32,14 @@
     min-height: 50px;
     transition: opacity 0.5s ease;
   }
-
+  #sceneCounter {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #ccc;
+  }
   .nav-buttons {
     margin-top: 20px;
   }
-
   button {
     background-color: #FF9000;
     border: none;
@@ -52,7 +50,6 @@
     cursor: pointer;
     transition: background 0.3s;
   }
-
   button:hover {
     background-color: #ffa733;
   }
@@ -62,7 +59,8 @@
 
 <div class="scene-container">
   <img id="sceneImage" src="" alt="Сцена">
-  <div class="story" id="sceneStory">Загрузка сцены...</div>
+  <div id="sceneStory">Загрузка сцены...</div>
+  <div id="sceneCounter"></div>
   <div class="nav-buttons">
     <button onclick="prevScene()">← Назад</button>
     <button onclick="nextScene()">Вперед →</button>
@@ -102,6 +100,7 @@ let currentScene = 0;
 function showScene(index) {
   const img = document.getElementById('sceneImage');
   const story = document.getElementById('sceneStory');
+  const counter = document.getElementById('sceneCounter');
 
   img.style.opacity = 0;
   story.style.opacity = 0;
@@ -109,6 +108,7 @@ function showScene(index) {
   setTimeout(() => {
     img.src = scenes[index].img;
     story.textContent = scenes[index].story;
+    counter.textContent = `Сцена ${index + 1} из ${scenes.length}`;
     img.style.opacity = 1;
     story.style.opacity = 1;
   }, 200);
