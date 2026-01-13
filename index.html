@@ -16,27 +16,32 @@
     height: 100vh;
     overflow: hidden;
   }
+
   .scene-container {
     position: relative;
     width: 90%;
     max-width: 900px;
     text-align: center;
   }
-  img {
+
+  #sceneImage {
     width: 100%;
     border-radius: 12px;
     transition: opacity 0.5s ease;
   }
-  .story {
+
+  #sceneStory {
     margin-top: 10px;
     font-size: 18px;
     color: #FF9000;
     min-height: 50px;
     transition: opacity 0.5s ease;
   }
+
   .nav-buttons {
     margin-top: 20px;
   }
+
   button {
     background-color: #FF9000;
     border: none;
@@ -47,6 +52,7 @@
     cursor: pointer;
     transition: background 0.3s;
   }
+
   button:hover {
     background-color: #ffa733;
   }
@@ -56,7 +62,7 @@
 
 <div class="scene-container">
   <img id="sceneImage" src="" alt="Сцена">
-  <div class="story" id="sceneStory"></div>
+  <div class="story" id="sceneStory">Загрузка сцены...</div>
   <div class="nav-buttons">
     <button onclick="prevScene()">← Назад</button>
     <button onclick="nextScene()">Вперед →</button>
@@ -105,7 +111,7 @@ function showScene(index) {
     story.textContent = scenes[index].story;
     img.style.opacity = 1;
     story.style.opacity = 1;
-  }, 300);
+  }, 200);
 }
 
 function nextScene() {
@@ -118,6 +124,7 @@ function prevScene() {
   showScene(currentScene);
 }
 
+// Показываем первую сцену сразу
 showScene(currentScene);
 </script>
 
