@@ -29,6 +29,12 @@ img {
   object-fit: contain;
   border-radius: 14px;
   box-shadow: 0 0 25px rgba(255,144,0,0.35);
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.fade-out {
+  opacity: 0;
 }
 
 #story {
@@ -36,6 +42,7 @@ img {
   font-size: 18px;
   color: #ff9000;
   min-height: 60px;
+  cursor: pointer;
 }
 
 button {
@@ -68,7 +75,7 @@ button:hover { background: #ffae3d; }
   <!-- STORY -->
   <div id="viewer" class="hidden">
     <img id="sceneImage" alt="">
-    <div id="story"></div>
+    <div id="story" onclick="skipTyping()"></div>
 
     <div>
       <button onclick="prevScene()">← Назад</button>
@@ -83,7 +90,6 @@ button:hover { background: #ffae3d; }
 
 </div>
 
-<!-- ФОНОВЫЙ ЗВУК -->
 <audio id="ambient" loop>
   <source src="sci-fi-ambient-music-183269.mp3" type="audio/mpeg">
 </audio>
@@ -91,36 +97,12 @@ button:hover { background: #ffae3d; }
 <script>
 const scenes = [
   { img: "загhghружено.png", text: "Ах ты сука. Ах ты блять." },
-
   { img: "загружено%20-%202026-01-12T232501.124.png", text: "Ты кому дала ебать?" },
   { img: "загружено%20-%202026-01-12T232757.150.png", text: "Не твое мамаша дело." },
   { img: "загружено%20-%202026-01-12T232914.625.png", text: "Не твоя пизда терпела." },
   { img: "загружено%20-%202026-01-12T232949.336.png", text: "Ты вчера у дяди Вани." },
   { img: "загружено%20-%202026-01-12T233143.324.png", text: "Хуй сосала на диване." },
-
-  { img: "загружено%20-%202026-01-13T000445.336.png", text: "Ночь тянулась медленно." },
-  { img: "загружено%20-%202026-01-13T004259.687.png", text: "Без слов они понимали друг друга." },
-  { img: "загружено%20-%202026-01-13T004746.705.png", text: "И время будто остановилось." },
-
-  { img: "загружено%20-%202026-01-13T022301.004.png", text: "Тишина давила." },
-  { img: "загружено%20-%202026-01-13T022420.515.png", text: "Каждый звук был лишним." },
-  { img: "загружено%20-%202026-01-13T022533.871.png", text: "Они ждали." },
-  { img: "загружено%20-%202026-01-13T022634.678.png", text: "Слишком долго." },
-  { img: "загружено%20-%202026-01-13T022737.915.png", text: "Но никто не уходил." },
-
-  { img: "загружено%20-%202026-01-13T023447.891.png", text: "Конец был близко." },
-  { img: "загружено%20-%202026-01-13T184731.079.png", text: "И он был неизбежен." },
-  { img: "загружено%20-%202026-01-13T191849.034.png", text: "Как рассвет." },
-  { img: "загружено%20-%202026-01-13T192606.087.png", text: "После самой тёмной ночи." },
-
-  { img: "загружено%20-%202026-01-13T192916.697.png", text: "Они выжили." },
-  { img: "загружено%20-%202026-01-13T193020.129.png", text: "Каждый по-своему." },
-  { img: "загружено%20-%202026-01-13T193126.892.png", text: "Но вместе." },
-
-  { img: "загружено%20-%202026-01-13T202557.230.png", text: "История закончилась." },
-  { img: "загружено%20-%202026-01-13T203454.029.png", text: "Память осталась." },
-
-  { img: "загрушшшжено.png", text: "Тишина." }
+  { img: "загружено%20-%202026-01-13T004746.705.png", text: "Без слов они понимали друг друга полностью." }
 ];
 
 let index = 0;
@@ -130,34 +112,78 @@ let ambientOn = false;
 const ambient = document.getElementById("ambient");
 ambient.volume = 0.25;
 
+const imgEl = document.getElementById("sceneImage");
+const storyEl = document.getElementById("story");
+
+let typingInterval = null;
+let fullText = "";
+let charIndex = 0;
+
 function startStory() {
   document.getElementById("intro").classList.add("hidden");
   document.getElementById("viewer").classList.remove("hidden");
   toggleAmbient(true);
-  showScene(true);
+  showScene();
 }
 
-function showScene(autoSpeak = true) {
-  const scene = scenes[index];
-  document.getElementById("sceneImage").src = scene.img;
-  document.getElementById("story").textContent = scene.text;
-  if (autoSpeak) speak(scene.text);
+function showScene() {
+  fadeOut(() => {
+    const scene = scenes[index];
+    imgEl.src = scene.img;
+    startTyping(scene.text);
+    speak(scene.text);
+    fadeIn();
+  });
 }
 
+function fadeOut(cb) {
+  imgEl.classList.add("fade-out");
+  setTimeout(cb, 600);
+}
+
+function fadeIn() {
+  setTimeout(() => imgEl.classList.remove("fade-out"), 50);
+}
+
+// ===== ПЕЧАТАЮЩИЙСЯ ТЕКСТ =====
+function startTyping(text) {
+  clearInterval(typingInterval);
+  fullText = text;
+  charIndex = 0;
+  storyEl.textContent = "";
+
+  typingInterval = setInterval(() => {
+    storyEl.textContent += fullText[charIndex];
+    charIndex++;
+    if (charIndex >= fullText.length) {
+      clearInterval(typingInterval);
+    }
+  }, 30);
+}
+
+function skipTyping() {
+  if (typingInterval) {
+    clearInterval(typingInterval);
+    storyEl.textContent = fullText;
+  }
+}
+
+// ===== НАВИГАЦИЯ =====
 function nextScene() {
   if (index < scenes.length - 1) {
     index++;
-    showScene(true);
+    showScene();
   }
 }
 
 function prevScene() {
   if (index > 0) {
     index--;
-    showScene(true);
+    showScene();
   }
 }
 
+// ===== ОЗВУЧКА =====
 function speak(text) {
   stopSpeak();
   utterance = new SpeechSynthesisUtterance(text);
@@ -170,6 +196,7 @@ function stopSpeak() {
   speechSynthesis.cancel();
 }
 
+// ===== ФОН =====
 function toggleAmbient(forceOn = false) {
   if (forceOn || !ambientOn) {
     ambient.play();
