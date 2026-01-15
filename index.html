@@ -2,195 +2,106 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<title>Glitch Film 24 фото</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Фото-история • Glitch Film</title>
 
 <style>
-body {
-  margin: 0;
-  background: #0d0d0d;
-  font-family: Arial, sans-serif;
-  color: #ff9000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+html,body{margin:0;padding:0;width:100%;height:100%;background:black;overflow:hidden;font-family:monospace;}
 
-#app {
-  width: 90%;
-  max-width: 900px;
-  text-align: center;
-}
+#scene{position:fixed;inset:0;background-size:contain;background-position:center;background-repeat:no-repeat;transition:opacity 1s;}
 
-/* === START === */
-#start {
-  position: absolute;
-  inset: 0;
-  background: #0d0d0d;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-}
+#caption{position:absolute;bottom:5%;width:100%;text-align:center;color:#ff9000;font-size:20px;text-shadow:0 0 10px black;}
 
-/* === SCENE === */
-#scene {
-  position: relative;
-  height: 70vh;
-  overflow: hidden;
-  border-radius: 16px;
-  box-shadow: 0 0 30px rgba(255,144,0,0.35);
-  opacity: 0;
-  transition: opacity 1s;
-}
+.glitch{animation:glitch 0.25s steps(2,end);}
+@keyframes glitch{0%{transform:none;}50%{transform:translate(-10px,5px) skewX(4deg);}100%{transform:none;}}
 
-#scene.show { opacity: 1; }
+.rgb::before,.rgb::after{content:"";position:absolute;inset:0;background:inherit;background-size:inherit;mix-blend-mode:screen;}
+.rgb::before{filter:drop-shadow(-6px 0 red);}
+.rgb::after{filter:drop-shadow(6px 0 cyan);}
 
-/* === LAYERS === */
-.layer {
-  position: absolute;
-  inset: -5%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
+.tear{animation:tear .35s steps(2,end);}
+@keyframes tear{25%{clip-path:inset(15% 0 65% 0);transform:translateX(-20px);}50%{clip-path:inset(45% 0 25% 0);transform:translateX(20px);}}
 
-/* breathing */
-.bg { animation: bgMove 30s ease-in-out infinite alternate; opacity: 0.35; }
-.mid { animation: midMove 20s ease-in-out infinite alternate; }
-.front { animation: frontMove 14s ease-in-out infinite alternate; }
+.crash{animation:crash .4s steps(1,end);}
+@keyframes crash{50%{filter:invert(1) contrast(200%);transform:scale(1.03) skewX(6deg);}}
 
-/* === GLITCH === */
-.glitch {
-  animation: glitch 0.5s steps(2, end);
-}
-
-@keyframes glitch {
-  0%   { transform: translate(0); filter: none; }
-  20%  { transform: translate(-6px, 3px); filter: hue-rotate(20deg); }
-  40%  { transform: translate(6px, -3px); filter: hue-rotate(-20deg); }
-  60%  { transform: translate(-3px, 2px); filter: contrast(160%); }
-  80%  { transform: translate(3px, -2px); filter: saturate(180%); }
-  100% { transform: translate(0); filter: none; }
-}
-
-/* === KEYFRAMES === */
-@keyframes bgMove {
-  from { transform: scale(1); }
-  to { transform: scale(1.05) translateY(-10px); }
-}
-@keyframes midMove {
-  from { transform: scale(1); }
-  to { transform: scale(1.08) translateY(-20px); }
-}
-@keyframes frontMove {
-  from { transform: scale(1); }
-  to { transform: scale(1.12) translateY(-35px); }
-}
-
-/* === TEXT === */
-#story {
-  margin-top: 10px;
-  min-height: 30px;
-  opacity: 0.8;
-}
-
-/* === BUTTON === */
-button {
-  padding: 14px 26px;
-  font-size: 18px;
-  border: none;
-  border-radius: 12px;
-  background: #ff9000;
-  cursor: pointer;
-}
-button:hover { background: #ffae3d; }
+.noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.05) 1px,transparent 1px,transparent 2px);animation:noise 0.15s infinite;pointer-events:none;}
+@keyframes noise{from{transform:translate(0,0);}to{transform:translate(-12px,12px);}}
 </style>
 </head>
-
 <body>
-<div id="app">
-
-<div id="start">
-  <button onclick="startFilm()">▶ Начать фильм</button>
-</div>
 
 <div id="scene">
-  <div class="layer bg" id="bg"></div>
-  <div class="layer mid" id="mid"></div>
-  <div class="layer front" id="front"></div>
+  <div class="noise"></div>
+  <div id="caption"></div>
 </div>
 
-<div id="story"></div>
-
-<audio id="music" src="sci-fi-ambient-music-183269.mp3" loop></audio>
-
-</div>
+<audio id="music" loop>
+  <source src="sci-fi-ambient-music-183269.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-const images = [
-  "загhghружено.png",
-  "загрушшшжено.png",
-  "загружено - 2026-01-12T232501.124.png",
-  "загружено - 2026-01-12T232757.150.png",
-  "загружено - 2026-01-12T232914.625.png",
-  "загружено - 2026-01-12T232949.336.png",
-  "загружено - 2026-01-12T233143.324.png",
-  "загружено - 2026-01-13T000445.336.png",
-  "загружено - 2026-01-13T004259.687.png",
-  "загружено - 2026-01-13T004746.705.png",
-  "загружено - 2026-01-13T022301.004.png",
-  "загружено - 2026-01-13T022420.515.png",
-  "загружено - 2026-01-13T022533.871.png",
-  "загружено - 2026-01-13T022634.678.png",
-  "загружено - 2026-01-13T022737.915.png",
-  "загружено - 2026-01-13T023447.891.png",
-  "загружено - 2026-01-13T184731.079.png",
-  "загружено - 2026-01-13T191849.034.png",
-  "загружено - 2026-01-13T192606.087.png",
-  "загружено - 2026-01-13T192916.697.png",
-  "загружено - 2026-01-13T193020.129.png",
-  "загружено - 2026-01-13T193126.892.png",
-  "загружено - 2026-01-13T202557.230.png",
-  "загружено - 2026-01-13T203454.029.png"
+const images=[
+"загhghружено.png",
+"загрушшшжено.png",
+"загружено - 2026-01-12T232501.124.png",
+"загружено - 2026-01-12T232757.150.png",
+"загружено - 2026-01-12T232914.625.png",
+"загружено - 2026-01-12T232949.336.png",
+"загружено - 2026-01-12T233143.324.png",
+"загружено - 2026-01-13T000445.336.png",
+"загружено - 2026-01-13T004259.687.png",
+"загружено - 2026-01-13T004746.705.png",
+"загружено - 2026-01-13T022301.004.png",
+"загружено - 2026-01-13T022420.515.png",
+"загружено - 2026-01-13T022533.871.png",
+"загружено - 2026-01-13T022634.678.png",
+"загружено - 2026-01-13T022737.915.png",
+"загружено - 2026-01-13T023447.891.png",
+"загружено - 2026-01-13T184731.079.png",
+"загружено - 2026-01-13T191849.034.png",
+"загружено - 2026-01-13T192606.087.png",
+"загружено - 2026-01-13T192916.697.png",
+"загружено - 2026-01-13T193020.129.png",
+"загружено - 2026-01-13T193126.892.png",
+"загружено - 2026-01-13T202557.230.png",
+"загружено - 2026-01-13T203454.029.png"
 ];
 
-let index = 0;
-let timer;
-const DURATION = 6000;
-const music = document.getElementById("music");
+const texts=images.map((_,i)=>`Кадр ${i+1} / 24`);
 
-function render() {
-  const img = images[index];
-  bg.style.backgroundImage = `url("${img}")`;
-  mid.style.backgroundImage = `url("${img}")`;
-  front.style.backgroundImage = `url("${img}")`;
-  story.textContent = `Кадр ${index + 1} / ${images.length}`;
+const scene=document.getElementById("scene");
+const caption=document.getElementById("caption");
+const music=document.getElementById("music");
 
-  glitchRandom();
+let i=0;
+document.addEventListener("click",()=>{music.play();},{once:true});
+
+function glitch(){
+  const r=Math.random();
+  if(r<0.3){scene.classList.add("glitch");}
+  if(r<0.2){scene.classList.add("rgb");}
+  if(r<0.15){scene.classList.add("tear");}
+  if(r>0.92){scene.classList.add("crash");}
+  setTimeout(()=>scene.className="",400);
 }
 
-function glitchRandom() {
-  if (Math.random() < 0.25) { // 25% шанс
-    scene.classList.add("glitch");
-    setTimeout(() => scene.classList.remove("glitch"), 500);
-  }
+function nextScene(){
+  scene.style.opacity=0;
+  setTimeout(()=>{
+    scene.style.backgroundImage=`url('${images[i]}')`;
+    caption.textContent=texts[i];
+    glitch();
+    scene.style.opacity=1;
+    i++;
+    if(i>=images.length){clearInterval(timer);caption.textContent="— Конец —";}
+  },1200);
 }
 
-function nextScene() {
-  index = (index + 1) % images.length;
-  render();
-}
-
-function startFilm() {
-  start.style.display = "none";
-  scene.classList.add("show");
-  music.volume = 0.6;
-  music.play();
-  render();
-  timer = setInterval(nextScene, DURATION);
-}
+scene.style.backgroundImage=`url('${images[0]}')`;
+caption.textContent=texts[0];
+music.volume=0.6;
+let timer=setInterval(nextScene,6000);
 </script>
 
 </body>
