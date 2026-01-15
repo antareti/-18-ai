@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Фото-история</title>
+<title>Фото-история • Фильм</title>
 
 <style>
 body {
@@ -39,7 +39,7 @@ body {
   background-size: contain;
 }
 
-.bg { animation: bgMove 30s ease-in-out infinite alternate; opacity: 0.4; }
+.bg { animation: bgMove 30s ease-in-out infinite alternate; opacity: 0.35; }
 .mid { animation: midMove 20s ease-in-out infinite alternate; }
 .front { animation: frontMove 14s ease-in-out infinite alternate; }
 
@@ -57,14 +57,15 @@ body {
 }
 
 #story {
-  margin-top: 12px;
+  margin-top: 10px;
   min-height: 40px;
+  opacity: 0.8;
 }
 
 button {
   margin: 8px;
-  padding: 12px 22px;
-  font-size: 16px;
+  padding: 10px 18px;
+  font-size: 15px;
   border: none;
   border-radius: 10px;
   background: #ff9000;
@@ -86,11 +87,10 @@ button:hover { background: #ffae3d; }
 <div id="story"></div>
 
 <div>
-  <button onclick="prevScene()">← Назад</button>
-  <button onclick="nextScene()">Вперёд →</button>
+  <button onclick="togglePlay()">⏯ Пауза / Пуск</button>
 </div>
 
-<audio id="music" src="sci-fi-ambient-music-183269.mp3" loop autoplay></audio>
+<audio id="music" src="sci-fi-ambient-music-183269.mp3" loop></audio>
 
 </div>
 
@@ -123,30 +123,48 @@ const images = [
 ];
 
 let index = 0;
+let playing = true;
+let timer = null;
+const DURATION = 6000; // ⏱️ 6 секунд на сцену
+
+const music = document.getElementById("music");
+music.volume = 0.6;
+music.play();
 
 function render() {
   const img = images[index];
   bg.style.backgroundImage = `url("${img}")`;
   mid.style.backgroundImage = `url("${img}")`;
   front.style.backgroundImage = `url("${img}")`;
-  story.textContent = `Сцена ${index + 1} из ${images.length}`;
+  story.textContent = `Сцена ${index + 1} / ${images.length}`;
 }
 
 function nextScene() {
-  if (index < images.length - 1) {
-    index++;
-    render();
-  }
+  index = (index + 1) % images.length;
+  render();
 }
 
-function prevScene() {
-  if (index > 0) {
-    index--;
-    render();
+function startAuto() {
+  timer = setInterval(nextScene, DURATION);
+}
+
+function stopAuto() {
+  clearInterval(timer);
+}
+
+function togglePlay() {
+  playing = !playing;
+  if (playing) {
+    startAuto();
+    music.play();
+  } else {
+    stopAuto();
+    music.pause();
   }
 }
 
 render();
+startAuto();
 </script>
 
 </body>
