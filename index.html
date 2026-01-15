@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Фото-история</title>
+<title>Фото-история :: Parallax</title>
 
 <style>
 body {
   margin: 0;
   background: #0d0d0d;
   font-family: Arial, sans-serif;
-  color: #fff;
+  color: #ff9000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,190 +23,144 @@ body {
   text-align: center;
 }
 
-img {
+/* ===== СЦЕНА ===== */
+#scene {
+  position: relative;
   width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  border-radius: 14px;
-  box-shadow: 0 0 25px rgba(255,144,0,0.35);
-  opacity: 1;
-  transition: opacity 0.6s ease;
+  height: 70vh;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(255,144,0,0.35);
 }
 
-.fade-out {
-  opacity: 0;
+/* ===== СЛОИ ===== */
+.layer {
+  position: absolute;
+  inset: -5%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
+/* дальний фон */
+.bg {
+  animation: bgMove 30s ease-in-out infinite alternate;
+  opacity: 0.5;
+}
+
+/* основной */
+.mid {
+  animation: midMove 20s ease-in-out infinite alternate;
+}
+
+/* передний */
+.front {
+  animation: frontMove 14s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes bgMove {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.05) translateY(-10px); }
+}
+
+@keyframes midMove {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.08) translateY(-20px); }
+}
+
+@keyframes frontMove {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.12) translateY(-35px); }
+}
+
+/* ===== ТЕКСТ ===== */
 #story {
-  margin-top: 15px;
+  margin-top: 14px;
   font-size: 18px;
-  color: #ff9000;
-  min-height: 60px;
-  cursor: pointer;
+  min-height: 50px;
 }
 
+/* ===== КНОПКИ ===== */
 button {
-  background: #ff9000;
-  border: none;
+  margin: 8px;
   padding: 12px 22px;
   font-size: 16px;
+  border: none;
   border-radius: 10px;
+  background: #ff9000;
   cursor: pointer;
-  margin: 6px;
 }
-
 button:hover { background: #ffae3d; }
-.hidden { display: none; }
 </style>
 </head>
 
 <body>
 <div id="app">
 
-  <!-- INTRO -->
-  <div id="intro">
-    <img src="загhghружено.png" alt="Интро">
-    <p style="color:#ff9000;font-size:18px;">
-      Тихая ночь. Подвал. История начинается.
-    </p>
-    <button onclick="startStory()">Начать историю</button>
+  <div id="scene">
+    <div class="layer bg" id="bg"></div>
+    <div class="layer mid" id="mid"></div>
+    <div class="layer front" id="front"></div>
   </div>
 
-  <!-- STORY -->
-  <div id="viewer" class="hidden">
-    <img id="sceneImage" alt="">
-    <div id="story" onclick="skipTyping()"></div>
+  <div id="story"></div>
 
-    <div>
-      <button onclick="prevScene()">← Назад</button>
-      <button onclick="nextScene()">Вперёд →</button>
-    </div>
-
-    <div>
-      <button onclick="toggleAmbient()">🎧 Фон Вкл/Выкл</button>
-      <button onclick="stopSpeak()">⏹ Озвучку</button>
-    </div>
+  <div>
+    <button onclick="prevScene()">← Назад</button>
+    <button onclick="nextScene()">Вперёд →</button>
   </div>
 
 </div>
 
-<audio id="ambient" loop>
-  <source src="sci-fi-ambient-music-183269.mp3" type="audio/mpeg">
-</audio>
-
 <script>
 const scenes = [
-  { img: "загhghружено.png", text: "Ах ты сука. Ах ты блять." },
-  { img: "загружено%20-%202026-01-12T232501.124.png", text: "Ты кому дала ебать?" },
-  { img: "загружено%20-%202026-01-12T232757.150.png", text: "Не твое мамаша дело." },
-  { img: "загружено%20-%202026-01-12T232914.625.png", text: "Не твоя пизда терпела." },
-  { img: "загружено%20-%202026-01-12T232949.336.png", text: "Ты вчера у дяди Вани." },
-  { img: "загружено%20-%202026-01-12T233143.324.png", text: "Хуй сосала на диване." },
-  { img: "загружено%20-%202026-01-13T004746.705.png", text: "Без слов они понимали друг друга полностью." }
+  {
+    bg: "загhghружено.png",
+    mid: "загhghружено.png",
+    front: "загhghружено.png",
+    text: "Тишина давит сильнее слов."
+  },
+  {
+    bg: "загружено - 2026-01-12T232501.124.png",
+    mid: "загружено - 2026-01-12T232501.124.png",
+    front: "загружено - 2026-01-12T232501.124.png",
+    text: "Время будто остановилось."
+  },
+  {
+    bg: "загружено - 2026-01-13T004259.687.png",
+    mid: "загружено - 2026-01-13T004259.687.png",
+    front: "загружено - 2026-01-13T004259.687.png",
+    text: "Они поняли всё без слов."
+  }
 ];
 
 let index = 0;
-let utterance = null;
-let ambientOn = false;
 
-const ambient = document.getElementById("ambient");
-ambient.volume = 0.25;
-
-const imgEl = document.getElementById("sceneImage");
-const storyEl = document.getElementById("story");
-
-let typingInterval = null;
-let fullText = "";
-let charIndex = 0;
-
-function startStory() {
-  document.getElementById("intro").classList.add("hidden");
-  document.getElementById("viewer").classList.remove("hidden");
-  toggleAmbient(true);
-  showScene();
+function render() {
+  const s = scenes[index];
+  bg.style.backgroundImage = `url("${s.bg}")`;
+  mid.style.backgroundImage = `url("${s.mid}")`;
+  front.style.backgroundImage = `url("${s.front}")`;
+  story.textContent = s.text;
 }
 
-function showScene() {
-  fadeOut(() => {
-    const scene = scenes[index];
-    imgEl.src = scene.img;
-    startTyping(scene.text);
-    speak(scene.text);
-    fadeIn();
-  });
-}
-
-function fadeOut(cb) {
-  imgEl.classList.add("fade-out");
-  setTimeout(cb, 600);
-}
-
-function fadeIn() {
-  setTimeout(() => imgEl.classList.remove("fade-out"), 50);
-}
-
-// ===== ПЕЧАТАЮЩИЙСЯ ТЕКСТ =====
-function startTyping(text) {
-  clearInterval(typingInterval);
-  fullText = text;
-  charIndex = 0;
-  storyEl.textContent = "";
-
-  typingInterval = setInterval(() => {
-    storyEl.textContent += fullText[charIndex];
-    charIndex++;
-    if (charIndex >= fullText.length) {
-      clearInterval(typingInterval);
-    }
-  }, 30);
-}
-
-function skipTyping() {
-  if (typingInterval) {
-    clearInterval(typingInterval);
-    storyEl.textContent = fullText;
-  }
-}
-
-// ===== НАВИГАЦИЯ =====
 function nextScene() {
   if (index < scenes.length - 1) {
     index++;
-    showScene();
+    render();
   }
 }
 
 function prevScene() {
   if (index > 0) {
     index--;
-    showScene();
+    render();
   }
 }
 
-// ===== ОЗВУЧКА =====
-function speak(text) {
-  stopSpeak();
-  utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ru-RU";
-  utterance.rate = 0.95;
-  speechSynthesis.speak(utterance);
-}
-
-function stopSpeak() {
-  speechSynthesis.cancel();
-}
-
-// ===== ФОН =====
-function toggleAmbient(forceOn = false) {
-  if (forceOn || !ambientOn) {
-    ambient.play();
-    ambientOn = true;
-  } else {
-    ambient.pause();
-    ambientOn = false;
-  }
-}
+render();
 </script>
-
 </body>
 </html>
