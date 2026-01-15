@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Ultra Glitch Film</title>
+<title>Glitch Film 24 фото</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;background:black;overflow:hidden;font-family:monospace;}
-#scene{position:fixed;inset:0;background-size:contain;background-position:center;background-repeat:no-repeat;transition:opacity 1s;}
+#scene{position:fixed;inset:0;background-size:contain;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1.2s;}
 #caption{position:absolute;bottom:5%;width:100%;text-align:center;color:#ff9000;font-size:20px;text-shadow:0 0 10px black;z-index:10;}
 .noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.05) 1px,transparent 1px,transparent 2px);animation:noise 0.15s infinite;pointer-events:none;}
 @keyframes noise{from{transform:translate(0,0);}to{transform:translate(-12px,12px);}}
@@ -73,7 +73,7 @@ let i=0;
 /* click to enable sound */
 document.addEventListener("click",()=>{music.play();},{once:true});
 
-/* glitch functions */
+/* glitch */
 function glitch(){
   const r=Math.random();
   if(r<0.25){scene.classList.add("glitch");}
@@ -84,7 +84,7 @@ function glitch(){
   setTimeout(()=>scene.className="",400);
 }
 
-/* next scene */
+/* next frame with fade */
 function nextScene(){
   scene.style.opacity=0;
   setTimeout(()=>{
@@ -99,8 +99,10 @@ function nextScene(){
 
 /* start */
 scene.style.backgroundImage=`url('${images[0]}')`;
+scene.style.opacity=1;
 caption.textContent=texts[0];
 music.volume=0.6;
+
 let timer=setInterval(nextScene,6000);
 </script>
 
