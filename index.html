@@ -45,7 +45,7 @@ button {
   font-size: 16px;
   border-radius: 10px;
   cursor: pointer;
-  margin: 8px;
+  margin: 6px;
 }
 
 button:hover { background: #ffae3d; }
@@ -69,54 +69,44 @@ button:hover { background: #ffae3d; }
   <div id="viewer" class="hidden">
     <img id="sceneImage">
     <div id="story"></div>
+
     <div>
       <button onclick="prevScene()">← Назад</button>
       <button onclick="nextScene()">Вперёд →</button>
     </div>
+
     <div>
-      <button onclick="stopSpeak()">⏹ Остановить озвучку</button>
+      <button onclick="toggleAmbient()">🎧 Фон: Вкл / Выкл</button>
+      <button onclick="stopSpeak()">⏹ Озвучку</button>
     </div>
   </div>
 
 </div>
 
+<!-- 🎧 ФОНОВЫЙ ЗВУК -->
+<audio id="ambient" loop>
+  <source src="sci-fi-ambient-music-183269.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 const scenes = [
   { img: "загружено.png", text: "Ах ты сука. Ах ты блять." },
-  { img: "загружено - 2026-01-12T232501.124.png", text: "Ты кому дала ебать?" },
-  { img: "загружено - 2026-01-12T232757.150.png", text: "Не твое мамаша дело." },
-  { img: "загружено - 2026-01-12T232914.625.png", text: "Не твоя пизда терпела." },
-  { img: "загружено - 2026-01-12T232949.336.png", text: "Ты вчера у дяди Вани." },
-  { img: "загружено - 2026-01-12T233143.324.png", text: "Хуй сосала на диване." },
-
-  {
-    img: "загружено - 2026-01-13T000445.336.png",
-    text: `Военные начали оформлять свои укрепления на Ларису Долину,
-чтобы противник не смог их занять.
-
-Мой муж очень заботливый человек.
-Помню, когда была беременна, проснулась ночью —
-очень захотелось в туалет.
-
-— Ты куда?
-— В туалет.
-— Лежи, я сам схожу.
-
-И действительно! Встал, ушёл, вернулся,
-чмокнул и засопел.
-Я так и пролежала в лёгком шоке.`
-  },
-
-  { img: "загружено - 2026-01-13T004259.687.png", text: "Без слов они понимали друг друга полностью." },
-  { img: "загружено - 2026-01-13T004746.705.png", text: "И жили они так долго и красиво." }
+  { img: "загружено-1.png", text: "Ты кому дала ебать?" },
+  { img: "загружено-2.png", text: "Не твое мамаша дело." },
+  { img: "загружено-3.png", text: "Без слов они понимали друг друга полностью." }
 ];
 
 let index = 0;
 let utterance = null;
+let ambientOn = false;
+
+const ambient = document.getElementById("ambient");
+ambient.volume = 0.25; // тихо, атмосферно
 
 function startStory() {
   document.getElementById("intro").classList.add("hidden");
   document.getElementById("viewer").classList.remove("hidden");
+  toggleAmbient(true); // автозапуск после клика
   showScene(true);
 }
 
@@ -151,6 +141,16 @@ function speak(text) {
 
 function stopSpeak() {
   speechSynthesis.cancel();
+}
+
+function toggleAmbient(forceOn = false) {
+  if (forceOn || !ambientOn) {
+    ambient.play();
+    ambientOn = true;
+  } else {
+    ambient.pause();
+    ambientOn = false;
+  }
 }
 </script>
 
