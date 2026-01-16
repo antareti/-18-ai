@@ -2,33 +2,83 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Glitch Film 24 фото</title>
+<title>FILM MODE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;background:black;overflow:hidden;font-family:monospace;}
-#scene{position:fixed;inset:0;background-size:contain;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1.2s;}
-#caption{position:absolute;bottom:5%;width:100%;text-align:center;color:#ff9000;font-size:20px;text-shadow:0 0 10px black;z-index:10;}
-.noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.05),rgba(255,255,255,0.05) 1px,transparent 1px,transparent 2px);animation:noise 0.15s infinite;pointer-events:none;}
-@keyframes noise{from{transform:translate(0,0);}to{transform:translate(-12px,12px);}}
-.glitch{animation:glitch 0.25s steps(2,end);}
-@keyframes glitch{0%{transform:none;}50%{transform:translate(-10px,5px) skewX(4deg);}100%{transform:none;}}
-.rgb::before,.rgb::after{content:"";position:absolute;inset:0;background:inherit;background-size:inherit;mix-blend-mode:screen;}
-.rgb::before{filter:drop-shadow(-8px 0 red);}
-.rgb::after{filter:drop-shadow(8px 0 cyan);}
-.tear{animation:tear .35s steps(2,end);}
-@keyframes tear{25%{clip-path:inset(15% 0 65% 0);transform:translateX(-20px);}50%{clip-path:inset(45% 0 25% 0);transform:translateX(20px);}}
-.crash{animation:crash .4s steps(1,end);}
-@keyframes crash{50%{filter:invert(1) contrast(200%);transform:scale(1.05) skewX(6deg);}}
-.flash{position:absolute;inset:0;background:white;opacity:0;pointer-events:none;}
-.scanline{position:absolute;inset:0;background:repeating-linear-gradient(transparent,transparent 2px,rgba(255,255,255,0.03) 3px);pointer-events:none;}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:black;
+  overflow:hidden;
+  font-family:monospace;
+}
+
+#scene{
+  position:fixed;
+  inset:0;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+
+/* эффекты */
+.noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04),rgba(255,255,255,.04) 1px,transparent 1px,transparent 2px);animation:noise .15s infinite;}
+@keyframes noise{to{transform:translate(-10px,10px);}}
+
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(transparent,transparent 2px,rgba(255,255,255,.03) 3px);}
+
+.flash{position:absolute;inset:0;background:white;opacity:0;}
+
+.glitch{animation:glitch .25s steps(2,end);}
+@keyframes glitch{50%{transform:translate(-12px,6px) skewX(5deg);}}
+
+.rgb::before,.rgb::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:inherit;
+  background-size:inherit;
+  mix-blend-mode:screen;
+}
+.rgb::before{filter:drop-shadow(-7px 0 red);}
+.rgb::after{filter:drop-shadow(7px 0 cyan);}
+
+.tear{animation:tear .3s steps(2,end);}
+@keyframes tear{
+  30%{clip-path:inset(20% 0 60% 0);transform:translateX(-25px);}
+  60%{clip-path:inset(55% 0 20% 0);transform:translateX(25px);}
+}
+
+/* мультяшное интро */
+.intro{
+  animation:introZoom 5s linear forwards;
+}
+@keyframes introZoom{
+  from{transform:scale(1);}
+  to{transform:scale(1.15);}
+}
+
+#caption{
+  position:absolute;
+  bottom:6%;
+  width:100%;
+  text-align:center;
+  color:#ff9000;
+  text-shadow:0 0 12px black;
+  font-size:20px;
+}
 </style>
 </head>
+
 <body>
 
 <div id="scene">
   <div class="noise"></div>
+  <div class="scan"></div>
   <div class="flash" id="flash"></div>
-  <div class="scanline"></div>
   <div id="caption"></div>
 </div>
 
@@ -63,47 +113,55 @@ const images=[
 "загружено - 2026-01-13T202557.230.png",
 "загружено - 2026-01-13T203454.029.png"
 ];
-const texts=images.map((_,i)=>`Кадр ${i+1} / 24`);
+
 const scene=document.getElementById("scene");
 const caption=document.getElementById("caption");
 const flash=document.getElementById("flash");
 const music=document.getElementById("music");
+
 let i=0;
 
-/* click to enable sound */
-document.addEventListener("click",()=>{music.play();},{once:true});
+/* звук разрешение */
+document.addEventListener("click",()=>{
+  music.volume=0.5;
+  music.play();
+},{once:true});
 
-/* glitch */
-function glitch(){
+/* страшные эффекты */
+function effects(){
   const r=Math.random();
-  if(r<0.25){scene.classList.add("glitch");}
-  if(r<0.2){scene.classList.add("rgb");}
-  if(r<0.15){scene.classList.add("tear");}
-  if(r>0.92){scene.classList.add("crash");}
-  if(r>0.85){flash.style.opacity=0.6;setTimeout(()=>flash.style.opacity=0,100);}
+  if(r<0.3)scene.classList.add("glitch");
+  if(r<0.25)scene.classList.add("rgb");
+  if(r<0.2)scene.classList.add("tear");
+  if(r>0.85){flash.style.opacity=.7;setTimeout(()=>flash.style.opacity=0,120);}
   setTimeout(()=>scene.className="",400);
 }
 
-/* next frame with fade */
-function nextScene(){
-  scene.style.opacity=0;
-  setTimeout(()=>{
-    scene.style.backgroundImage=`url('${images[i]}')`;
-    caption.textContent=texts[i];
-    glitch();
-    scene.style.opacity=1;
-    i++;
-    if(i>=images.length){clearInterval(timer);caption.textContent="— Конец —";}
-  },1200);
-}
-
-/* start */
-scene.style.backgroundImage=`url('${images[0]}')`;
+/* интро */
+scene.style.backgroundImage="url('1.png')";
+scene.classList.add("intro");
 scene.style.opacity=1;
-caption.textContent=texts[0];
-music.volume=0.6;
+caption.textContent="";
 
-let timer=setInterval(nextScene,6000);
+setTimeout(()=>{
+  scene.classList.remove("intro");
+  startFilm();
+},5000);
+
+/* фильм */
+function startFilm(){
+  setInterval(()=>{
+    scene.style.opacity=0;
+    setTimeout(()=>{
+      scene.style.backgroundImage=`url('${images[i]}')`;
+      caption.textContent=`Кадр ${i+1} / 24`;
+      effects();
+      scene.style.opacity=1;
+      i++;
+      if(i>=images.length)i=images.length-1;
+    },1200);
+  },6000);
+}
 </script>
 
 </body>
