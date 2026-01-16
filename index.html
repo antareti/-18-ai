@@ -2,74 +2,25 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>FILM MODE</title>
+<title>HORROR FILM</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  background:black;
-  overflow:hidden;
-  font-family:monospace;
-}
-
-#scene{
-  position:fixed;
-  inset:0;
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:contain;
-  opacity:0;
-  transition:opacity 1.2s ease;
-}
-
-/* эффекты */
+html,body{margin:0;width:100%;height:100%;background:black;overflow:hidden;font-family:monospace;}
+#scene{position:fixed;inset:0;background-position:center;background-repeat:no-repeat;background-size:contain;opacity:0;transition:opacity 1.2s;}
 .noise{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04),rgba(255,255,255,.04) 1px,transparent 1px,transparent 2px);animation:noise .15s infinite;}
 @keyframes noise{to{transform:translate(-10px,10px);}}
-
 .scan{position:absolute;inset:0;background:repeating-linear-gradient(transparent,transparent 2px,rgba(255,255,255,.03) 3px);}
-
 .flash{position:absolute;inset:0;background:white;opacity:0;}
-
 .glitch{animation:glitch .25s steps(2,end);}
 @keyframes glitch{50%{transform:translate(-12px,6px) skewX(5deg);}}
-
-.rgb::before,.rgb::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:inherit;
-  background-size:inherit;
-  mix-blend-mode:screen;
-}
+.rgb::before,.rgb::after{content:"";position:absolute;inset:0;background:inherit;background-size:inherit;mix-blend-mode:screen;}
 .rgb::before{filter:drop-shadow(-7px 0 red);}
 .rgb::after{filter:drop-shadow(7px 0 cyan);}
-
 .tear{animation:tear .3s steps(2,end);}
-@keyframes tear{
-  30%{clip-path:inset(20% 0 60% 0);transform:translateX(-25px);}
-  60%{clip-path:inset(55% 0 20% 0);transform:translateX(25px);}
-}
-
-/* мультяшное интро */
-.intro{
-  animation:introZoom 5s linear forwards;
-}
-@keyframes introZoom{
-  from{transform:scale(1);}
-  to{transform:scale(1.15);}
-}
-
-#caption{
-  position:absolute;
-  bottom:6%;
-  width:100%;
-  text-align:center;
-  color:#ff9000;
-  text-shadow:0 0 12px black;
-  font-size:20px;
-}
+@keyframes tear{30%{clip-path:inset(20% 0 60% 0);transform:translateX(-25px);}60%{clip-path:inset(55% 0 20% 0);transform:translateX(25px);}}
+.intro{animation:introZoom 5s linear forwards;}
+@keyframes introZoom{from{transform:scale(1);}to{transform:scale(1.15);}}
+#caption{position:absolute;bottom:6%;width:100%;text-align:center;color:#ff9000;text-shadow:0 0 12px black;font-size:20px;}
 </style>
 </head>
 
@@ -120,14 +71,27 @@ const flash=document.getElementById("flash");
 const music=document.getElementById("music");
 
 let i=0;
+let voicesReady=false;
 
-/* звук разрешение */
+/* разрешение звука */
 document.addEventListener("click",()=>{
   music.volume=0.5;
   music.play();
 },{once:true});
 
-/* страшные эффекты */
+/* хоррор-озвучка */
+function speakFrame(n){
+  if(!voicesReady) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(`Кадр ${n}`);
+  u.lang="ru-RU";
+  u.rate=0.65;
+  u.pitch=0.5;
+  u.volume=1;
+  speechSynthesis.speak(u);
+}
+
+/* эффекты */
 function effects(){
   const r=Math.random();
   if(r<0.3)scene.classList.add("glitch");
@@ -141,12 +105,8 @@ function effects(){
 scene.style.backgroundImage="url('1.png')";
 scene.classList.add("intro");
 scene.style.opacity=1;
-caption.textContent="";
 
-setTimeout(()=>{
-  scene.classList.remove("intro");
-  startFilm();
-},5000);
+setTimeout(startFilm,5000);
 
 /* фильм */
 function startFilm(){
@@ -156,12 +116,16 @@ function startFilm(){
       scene.style.backgroundImage=`url('${images[i]}')`;
       caption.textContent=`Кадр ${i+1} / 24`;
       effects();
+      speakFrame(i+1);
       scene.style.opacity=1;
       i++;
       if(i>=images.length)i=images.length-1;
     },1200);
   },6000);
 }
+
+/* ждём голоса */
+speechSynthesis.onvoiceschanged=()=>{voicesReady=true;}
 </script>
 
 </body>
